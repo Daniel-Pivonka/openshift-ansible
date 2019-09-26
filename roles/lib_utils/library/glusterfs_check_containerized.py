@@ -152,11 +152,10 @@ def check_volume_health_info(module, oc_exec, pod_name, volume):
 
 
 def check_volumes(module, oc_exec, pod_names):
+
+
     """Check status of all volumes on cluster"""
     for pod_name in pod_names:
-
-        print(pod_name)
-
         volume_list = get_volume_list(module, oc_exec, pod_name)
         for volume in volume_list:
             check_volume_health_info(module, oc_exec, pod_name, volume)
@@ -223,7 +222,7 @@ def run_module():
     if check_bricks:
         check_bricks_usage(module, oc_exec, pods)
 
-    result = {'changed': False}
+    result = {'changed': False, 'msg': pod_names}
     module.exit_json(**result)
 
 
