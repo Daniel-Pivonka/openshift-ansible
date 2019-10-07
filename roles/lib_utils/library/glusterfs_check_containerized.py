@@ -15,8 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
-
+import datetime
 from ansible.module_utils.basic import AnsibleModule
 
 
@@ -152,13 +151,14 @@ def check_volume_health_info(module, oc_exec, pod_name, volume):
 
 
 def check_volumes(module, oc_exec, pod_names):
-
-
     """Check status of all volumes on cluster"""
+    start_vol_checks=datetime.datetime.now()
     for pod_name in pod_names:
         volume_list = get_volume_list(module, oc_exec, pod_name)
         for volume in volume_list:
             check_volume_health_info(module, oc_exec, pod_name, volume)
+    end_vol_checks=datetime.datetime.now()
+    return start_vol_checks, end_vol_checks
 
 
 def check_bricks_usage(module, oc_exec, pods):
@@ -217,12 +217,12 @@ def run_module():
     pods = get_pods(module, oc_exec, cluster_name, valid_nodes)
     pod_names = select_pods(module, pods, target_nodes)
 
-    check_volumes(module, oc_exec, pod_names)
+    start_vol_checks, end_vol_checks = check_volumes(module, oc_exec, pod_names)
 
     if check_bricks:
         check_bricks_usage(module, oc_exec, pods)
 
-    result = {'changed': False, 'msg': pod_names}
+    result = {'changed': False,'msg':"volume check start and end time:" + start_vol_checks + end_vol_checks}
     module.exit_json(**result)
 
 
