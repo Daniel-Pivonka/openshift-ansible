@@ -156,7 +156,8 @@ def check_volumes(module, oc_exec, pod_names):
     for pod_name in pod_names:
         volume_list = get_volume_list(module, oc_exec, pod_name)
         for volume in volume_list:
-            check_volume_health_info(module, oc_exec, pod_name, volume)
+            pass
+            #check_volume_health_info(module, oc_exec, pod_name, volume)
     end_vol_checks=datetime.datetime.now()
     return start_vol_checks, end_vol_checks
 
