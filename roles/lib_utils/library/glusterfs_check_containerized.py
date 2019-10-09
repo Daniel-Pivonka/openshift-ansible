@@ -153,16 +153,22 @@ def check_volume_health_info(module, oc_exec, pod_name, volume):
 
 def check_volumes(module, oc_exec, pod_names):
     """Check status of all volumes on cluster"""
+
+    single_check_start='1'
+    single_check_end='1'
+
+
     start_vol_checks=datetime.datetime.now()
     listsize=0
     for pod_name in pod_names:
         volume_list = get_volume_list(module, oc_exec, pod_name)
         listsize = len(volume_list)
         for volume in volume_list:
-            pass
-            #check_volume_health_info(module, oc_exec, pod_name, volume)
+            single_check_start=datetime.datetime.now()
+            check_volume_health_info(module, oc_exec, pod_name, volume)
+            single_check_end=datetime.datetime.now()
     end_vol_checks=datetime.datetime.now()
-    return start_vol_checks, end_vol_checks, listsize
+    return start_vol_checks, end_vol_checks, listsize, single_check_start, single_check_end
 
 
 def check_bricks_usage(module, oc_exec, pods):
@@ -221,14 +227,14 @@ def run_module():
     pods = get_pods(module, oc_exec, cluster_name, valid_nodes)
     pod_names = select_pods(module, pods, target_nodes)
 
-    start_vol_checks, end_vol_checks, listsize = check_volumes(module, oc_exec, pod_names)
+    start_vol_checks, end_vol_checks, listsize, single_check_start, single_check_end = check_volumes(module, oc_exec, pod_names)
 
     if check_bricks:
         check_bricks_usage(module, oc_exec, pods)
 
 
     str1 = ''.join(pod_names)
-    result = {'changed': False,'msg':"volume check start and end time:" + start_vol_checks.strftime("%c") + end_vol_checks.strftime("%c") + str(listsize) + str1}
+    result = {'changed': False,'msg':"volume check start and end time:" + start_vol_checks.strftime("%c") + end_vol_checks.strftime("%c") + str(listsize) + str1+ single_check_start.strftime("%c") + single_check_end.strftime("%c")}
     module.exit_json(**result)
 
 
