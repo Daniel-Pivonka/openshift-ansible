@@ -224,7 +224,9 @@ def run_module():
     if check_bricks:
         check_bricks_usage(module, oc_exec, pods)
 
-    result = {'changed': False,'msg':"volume check start and end time:" + start_vol_checks + end_vol_checks + pod_names}
+
+    str1 = ''.join(pod_names)
+    result = {'changed': False,'msg':"volume check start and end time:" + start_vol_checks.strftime("%c") + end_vol_checks.strftime("%c") + str1}
     module.exit_json(**result)
 
 
