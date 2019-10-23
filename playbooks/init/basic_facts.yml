@@ -1,4 +1,12 @@
 ---
+- name: Verify Gluster Config
+  hosts: oo_first_master
+  tasks:
+  - name: Check for master gluster nodes 
+    fail:
+      msg: "Master nodes can not also be Gluster nodes. use openshift_storage_glusterfs_valid_config=false to bypass"
+    when: (groups.oo_glusterfs_to_config | intersect(groups.oo_masters_to_config) != []) and (openshift_storage_glusterfs_valid_config | default(true) | bool)
+
 - name: Ensure that all non-node hosts are accessible
   hosts: oo_masters_to_config:oo_etcd_to_config:oo_lb_to_config:oo_nfs_to_config
   any_errors_fatal: true
